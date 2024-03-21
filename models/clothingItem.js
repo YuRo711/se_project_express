@@ -37,4 +37,4 @@ const itemSchema = new Schema({
     },
 });
 
-module.exports = mongoose.model('film', itemSchema);
+module.exports = mongoose.model('clothingItem', itemSchema);
