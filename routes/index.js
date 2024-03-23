@@ -8,7 +8,7 @@ const {
 router.use(userRouter);
 router.use(itemRouter);
 
-router.get('*', function(req, res){
+router.use('*', function(req, res){
     res.status(NOT_FOUND_CODE).send(
         { message: "Requested resource not found" }
     );

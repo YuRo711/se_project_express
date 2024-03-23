@@ -17,22 +17,34 @@ const getItems =  (req, res) => {
 const createItem = (req, res) => {
     const owner = req.user._id;
     const { name, weather, imageUrl } = req.body;
-
     Item.create(
             { name, weather, imageUrl, owner }
         )
+        .orFail(() => {
+            const error = new Error();
+            error.name = 'ValidationError';
+            error.statusCode = 400;
+            throw error;
+        })
         .then(item => res.status(OK_CODE).send({ data: item }))
-        .catch((err) => res.status(SERVER_ERROR_CODE)
-            .send({ message: SERVER_ERROR_MESSAGE }));
+        .catch((err) => {
+            if (err.name === 'ValidationError') {
+                res.status(BAD_REQUEST_CODE)
+                    .send({ message: err.message })
+            } else {
+                res.status(SERVER_ERROR_CODE)
+                    .send({ message: SERVER_ERROR_MESSAGE })
+            }
+        });
 };
 
 const deleteItem = (req, res) => {
-    const { id } = req.params;
+    const { itemId } = req.params;
 
-    Item.findByIdAndDelete(id)
+    Item.findByIdAndDelete(itemId)
         .orFail(() => {
             const error = new Error();
-            error.name = "CastError";
+            error.name = "NotFound";
             error.statusCode = 400;
             throw error;
         })
@@ -40,7 +52,9 @@ const deleteItem = (req, res) => {
             return res.status(OK_CODE).send({ data: item });
         })
         .catch((err) => {
-            if (err.name === 'CastError') {
+            if (err.name === 'NotFound') {
+                res.status(NOT_FOUND_CODE).send({ message: err.message });
+            } else if (err.name === 'CastError') {
                 res.status(BAD_REQUEST_CODE).send({ message: err.message });
             } else {
                 res.status(SERVER_ERROR_CODE).send({ message: SERVER_ERROR_MESSAGE });

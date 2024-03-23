@@ -10,12 +10,12 @@ const {
 
 router.get('/users', getUsers);
 
-router.get('users/:id', getUser);
+router.get('/users/:id', getUser);
 
 router.post('/users', createUser);
 
 router.use((req, res, next) => {
-    if (res.statusCode == NOT_FOUND_CODE) {
+    if (res.statusCode === NOT_FOUND_CODE) {
         res.send({
             "message": "Requested resource not found"
         });

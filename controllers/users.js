@@ -40,14 +40,20 @@ const createUser = (req, res) => {
     const { name, avatar } = req.body;
 
     User.create({ name, avatar })
+        .orFail(() => {
+            const error = new Error();
+            error.name = 'ValidationError';
+            error.statusCode = 400;
+            throw error;
+        })
         .then(user => res.status(OK_CODE).send({ data: user }))
         .catch((err) => {
-            if (err.name === "ValidationError")
-            {
-                res.status(BAD_REQUEST_CODE).send({ message: err.message });
-
+            if (err.name === 'ValidationError') {
+                res.status(BAD_REQUEST_CODE)
+                    .send({ message: err.message })
             } else {
-                res.status(SERVER_ERROR_CODE).send({ message: SERVER_ERROR_MESSAGE })
+                res.status(SERVER_ERROR_CODE)
+                    .send({ message: SERVER_ERROR_MESSAGE })
             }
         });
 };
