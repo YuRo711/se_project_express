@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
-const Schema = mongoose.Schema,
-    ObjectId = Schema.ObjectId;
 const validator = require('validator');
+
+const { Schema } = mongoose;
+const { ObjectId } = Schema;
 
 const itemSchema = new Schema({
     name: {

@@ -20,12 +20,6 @@ const createItem = (req, res) => {
     Item.create(
             { name, weather, imageUrl, owner }
         )
-        .orFail(() => {
-            const error = new Error();
-            error.name = 'ValidationError';
-            error.statusCode = 400;
-            throw error;
-        })
         .then(item => res.status(OK_CODE).send({ data: item }))
         .catch((err) => {
             if (err.name === 'ValidationError') {
@@ -45,12 +39,10 @@ const deleteItem = (req, res) => {
         .orFail(() => {
             const error = new Error();
             error.name = "NotFound";
-            error.statusCode = 400;
+            error.statusCode = NOT_FOUND_CODE;
             throw error;
         })
-        .then(item => {
-            return res.status(OK_CODE).send({ data: item });
-        })
+        .then(item => res.status(OK_CODE).send({ data: item }))
         .catch((err) => {
             if (err.name === 'NotFound') {
                 res.status(NOT_FOUND_CODE).send({ message: err.message });
@@ -71,12 +63,14 @@ const likeItem = (req, res) =>
     )
         .orFail(() => {
             const error = new Error();
-            error.name = "CastError";
-            error.statusCode = 400;
+            error.name = "NotFound";
+            error.statusCode = NOT_FOUND_CODE;
             throw error;
         })
         .catch((err) => {
-            if (err.name === 'CastError') {
+            if (err.name === 'NotFound') {
+                res.status(NOT_FOUND_CODE).send({ message: err.message });
+            } else if (err.name === 'CastError') {
                 res.status(BAD_REQUEST_CODE).send({ message: err.message });
             } else {
                 res.status(SERVER_ERROR_CODE).send({ message: SERVER_ERROR_MESSAGE });
@@ -93,12 +87,14 @@ const dislikeItem = (req, res) =>
     )
         .orFail(() => {
             const error = new Error();
-            error.name = "CastError";
-            error.statusCode = 400;
+            error.name = "NotFound";
+            error.statusCode = NOT_FOUND_CODE;
             throw error;
         })
         .catch((err) => {
-            if (err.name === 'CastError') {
+            if (err.name === 'NotFound') {
+                res.status(NOT_FOUND_CODE).send({ message: err.message });
+            } else if (err.name === 'CastError') {
                 res.status(BAD_REQUEST_CODE).send({ message: err.message });
             } else {
                 res.status(SERVER_ERROR_CODE).send({ SERVER_ERROR_MESSAGE });

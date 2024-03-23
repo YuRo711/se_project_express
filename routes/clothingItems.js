@@ -21,7 +21,7 @@ router.put('/items/:itemId/likes', likeItem);
 router.delete('/items/:itemId/likes', dislikeItem);
 
 router.use((req, res, next) => {
-    if (res.statusCode == NOT_FOUND_CODE) {
+    if (res.statusCode === NOT_FOUND_CODE) {
         res.send({
             "message": "Requested resource not found"
         });
