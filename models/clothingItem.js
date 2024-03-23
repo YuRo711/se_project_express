@@ -12,6 +12,7 @@ const itemSchema = new Schema({
     },
     weather: {
         type: String,
+        required: true,
         enum: ['hot', 'warm', 'cold'],
     },
     imageUrl: {

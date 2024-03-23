@@ -2,7 +2,9 @@ const Item = require('../models/clothingItem');
 const { 
     SERVER_ERROR_CODE,
     NOT_FOUND_CODE,
-    OK_CODE
+    OK_CODE,
+    BAD_REQUEST_CODE,
+    SERVER_ERROR_MESSAGE
 } = require('../utils/errors')
 
 
@@ -21,7 +23,7 @@ const createItem = (req, res) => {
         )
         .then(item => res.status(OK_CODE).send({ data: item }))
         .catch((err) => res.status(SERVER_ERROR_CODE)
-            .send({ message: err.message }));
+            .send({ message: SERVER_ERROR_MESSAGE }));
 };
 
 const deleteItem = (req, res) => {
@@ -29,18 +31,19 @@ const deleteItem = (req, res) => {
 
     Item.findByIdAndDelete(id)
         .orFail(() => {
-            const error = new Error("Item ID not found");
-            error.statusCode = 404;
+            const error = new Error();
+            error.name = "CastError";
+            error.statusCode = 400;
             throw error;
         })
         .then(item => {
             return res.status(OK_CODE).send({ data: item });
         })
         .catch((err) => {
-            if (err.statusCode == NOT_FOUND_CODE) {
-                res.status(NOT_FOUND_CODE).send({ message: err.message });
+            if (err.name === 'CastError') {
+                res.status(BAD_REQUEST_CODE).send({ message: err.message });
             } else {
-                res.status(SERVER_ERROR_CODE).send({ message: err.message });
+                res.status(SERVER_ERROR_CODE).send({ message: SERVER_ERROR_MESSAGE });
             }
         });
 }
@@ -51,7 +54,20 @@ const likeItem = (req, res) =>
         req.params.itemId,
         { $addToSet: { likes: req.user._id } },
         { new: true },
-    );
+    )
+        .orFail(() => {
+            const error = new Error();
+            error.name = "CastError";
+            error.statusCode = 400;
+            throw error;
+        })
+        .catch((err) => {
+            if (err.name === 'CastError') {
+                res.status(BAD_REQUEST_CODE).send({ message: err.message });
+            } else {
+                res.status(SERVER_ERROR_CODE).send({ message: SERVER_ERROR_MESSAGE });
+            }
+        });;
 };
 
 const dislikeItem = (req, res) => 
@@ -62,10 +78,18 @@ const dislikeItem = (req, res) =>
         { new: true },
     )
         .orFail(() => {
-            const error = new Error("Item ID not found");
-            error.statusCode = 404;
+            const error = new Error();
+            error.name = "CastError";
+            error.statusCode = 400;
             throw error;
-        });
+        })
+        .catch((err) => {
+            if (err.name === 'CastError') {
+                res.status(BAD_REQUEST_CODE).send({ message: err.message });
+            } else {
+                res.status(SERVER_ERROR_CODE).send({ SERVER_ERROR_MESSAGE });
+            }
+        });;
 };
 
 module.exports = {
