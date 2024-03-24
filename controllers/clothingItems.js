@@ -45,7 +45,7 @@ const deleteItem = (req, res) => {
         .then(item => res.status(OK_CODE).send({ data: item }))
         .catch((err) => {
             if (err.name === 'NotFound') {
-                res.status(NOT_FOUND_CODE).send({ message: err.message });
+                res.status(NOT_FOUND_CODE).send({ message: "Not found error" }); 
             } else if (err.name === 'CastError') {
                 res.status(BAD_REQUEST_CODE).send({ message: err.message });
             } else {
@@ -69,7 +69,7 @@ const likeItem = (req, res) =>
         })
         .catch((err) => {
             if (err.name === 'NotFound') {
-                res.status(NOT_FOUND_CODE).send({ message: err.message });
+                res.status(NOT_FOUND_CODE).send({ message: "Not found error" }); 
             } else if (err.name === 'CastError') {
                 res.status(BAD_REQUEST_CODE).send({ message: err.message });
             } else {
@@ -93,7 +93,7 @@ const dislikeItem = (req, res) =>
         })
         .catch((err) => {
             if (err.name === 'NotFound') {
-                res.status(NOT_FOUND_CODE).send({ message: err.message });
+                res.status(NOT_FOUND_CODE).send({ message: "Not found error" }); 
             } else if (err.name === 'CastError') {
                 res.status(BAD_REQUEST_CODE).send({ message: err.message });
             } else {

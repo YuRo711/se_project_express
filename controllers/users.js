@@ -3,7 +3,8 @@ const {
     SERVER_ERROR_CODE,
     BAD_REQUEST_CODE,
     OK_CODE,
-    SERVER_ERROR_MESSAGE
+    SERVER_ERROR_MESSAGE,
+    NOT_FOUND_CODE
 } = require('../utils/errors')
 
 
@@ -19,13 +20,15 @@ const getUser = (req, res) => {
     User.findById(id)
         .orFail(() => {
             const error = new Error();
-            error.name = "CastError";
-            error.statusCode = 400;
+            error.name = "NotFound";
+            error.statusCode = NOT_FOUND_CODE;
             throw error;
         })
         .then(user => res.status(OK_CODE).send({ data: user }))
         .catch((err) => {
-            if (err.name === 'CastError') {
+            if (err.name === 'NotFound') {
+                res.status(NOT_FOUND_CODE).send({ message: "Not found error" }); 
+            } else if (err.name === 'CastError') {
                 res.status(BAD_REQUEST_CODE).send({ message: err.message });
             } else {
                 res.status(SERVER_ERROR_CODE).send({ message: SERVER_ERROR_MESSAGE });
