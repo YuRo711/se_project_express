@@ -4,7 +4,8 @@ const {
     NOT_FOUND_CODE,
     OK_CODE,
     BAD_REQUEST_CODE,
-    SERVER_ERROR_MESSAGE
+    SERVER_ERROR_MESSAGE,
+    NOT_AUTHORIZED_CODE
 } = require('../utils/errors')
 
 
@@ -34,13 +35,20 @@ const createItem = (req, res) => {
 
 const deleteItem = (req, res) => {
     const { itemId } = req.params;
-
-    Item.findByIdAndDelete(itemId)
+    Item.findById(itemId)
         .orFail(() => {
             const error = new Error();
-            error.name = "NotFound";
+            error.name = 'NotFound';
             error.statusCode = NOT_FOUND_CODE;
-            throw error;
+            return Promise.reject(error);
+        })
+        .then((item) => {
+            if (req.user._id !== item.owner) {
+                const error = new Error();
+                error.name = 'NotAuthorized';
+                return Promise.reject(error);
+            }
+            return Item.findByIdAndDelete(itemId);
         })
         .then(item => res.status(OK_CODE).send({ data: item }))
         .catch((err) => {
@@ -48,6 +56,8 @@ const deleteItem = (req, res) => {
                 res.status(NOT_FOUND_CODE).send({ message: "Not found error" }); 
             } else if (err.name === 'CastError') {
                 res.status(BAD_REQUEST_CODE).send({ message: err.message });
+            } else if (err.name === 'NotAuthorized') {
+                res.status(NOT_AUTHORIZED_CODE).send({ message: 'Not authorized' })
             } else {
                 res.status(SERVER_ERROR_CODE).send({ message: SERVER_ERROR_MESSAGE });
             }
@@ -65,7 +75,7 @@ const likeItem = (req, res) =>
             const error = new Error();
             error.name = "NotFound";
             error.statusCode = NOT_FOUND_CODE;
-            throw error;
+            return Promise.reject(error);
         })
         .catch((err) => {
             if (err.name === 'NotFound') {
@@ -89,7 +99,7 @@ const dislikeItem = (req, res) =>
             const error = new Error();
             error.name = "NotFound";
             error.statusCode = NOT_FOUND_CODE;
-            throw error;
+            return Promise.reject(error);
         })
         .catch((err) => {
             if (err.name === 'NotFound') {

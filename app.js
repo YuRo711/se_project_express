@@ -14,13 +14,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 mongoose.connect('mongodb://127.0.0.1:27017/wtwr_db');
 
-app.use((req, res, next) => {
-    req.user = {
-      _id: '65fcc4c0db8e5882bc0fe27d'
-    };
-    next();
-});
-
 app.use('/', router);
 
 app.listen(PORT);

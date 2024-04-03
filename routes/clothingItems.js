@@ -6,19 +6,20 @@ const {
     likeItem,
     dislikeItem,
 } = require('../controllers/clothingItems');
+const auth = require('../middlewares/auth');
 const { 
     NOT_FOUND_CODE
 } = require('../utils/errors')
 
 router.get('/items', getItems);
 
-router.post('/items', createItem);
+router.post('/items', auth, createItem);
 
-router.delete('/items/:itemId', deleteItem);
+router.delete('/items/:itemId', auth, deleteItem);
 
-router.put('/items/:itemId/likes', likeItem);
+router.put('/items/:itemId/likes', auth, likeItem);
 
-router.delete('/items/:itemId/likes', dislikeItem);
+router.delete('/items/:itemId/likes', auth, dislikeItem);
 
 router.use((req, res, next) => {
     if (res.statusCode === NOT_FOUND_CODE) {

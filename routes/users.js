@@ -1,18 +1,15 @@
 const router = require('express').Router();
 const { 
-    getUsers,
-    getUser,
-    createUser,
+    getCurrentUser, editCurrentUser
 } = require('../controllers/users');
+const auth = require('../middlewares/auth');
 const { 
     NOT_FOUND_CODE
 } = require('../utils/errors')
 
-router.get('/users', getUsers);
 
-router.get('/users/:id', getUser);
-
-router.post('/users', createUser);
+router.get('/users/me', auth, getCurrentUser);
+router.patch('/users/me', auth, editCurrentUser);
 
 router.use((req, res, next) => {
     if (res.statusCode === NOT_FOUND_CODE) {
