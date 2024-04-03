@@ -5,14 +5,15 @@ const {
     OK_CODE,
     BAD_REQUEST_CODE,
     SERVER_ERROR_MESSAGE,
-    NOT_AUTHORIZED_CODE
+    FORBIDDEN_CODE
 } = require('../utils/errors')
 
 
 const getItems =  (req, res) => {
     Item.find({})
         .then(items => res.status(OK_CODE).send({ data: items }))
-        .catch((err) => res.status(SERVER_ERROR_CODE).send({ message: err.message }));
+        .catch(() => 
+            res.status(SERVER_ERROR_CODE).send({ message: SERVER_ERROR_CODE }));
 };
 
 const createItem = (req, res) => {
@@ -57,7 +58,7 @@ const deleteItem = (req, res) => {
             } else if (err.name === 'CastError') {
                 res.status(BAD_REQUEST_CODE).send({ message: err.message });
             } else if (err.name === 'NotAuthorized') {
-                res.status(NOT_AUTHORIZED_CODE).send({ message: 'Not authorized' })
+                res.status(FORBIDDEN_CODE).send({ message: 'Not authorized' })
             } else {
                 res.status(SERVER_ERROR_CODE).send({ message: SERVER_ERROR_MESSAGE });
             }
@@ -77,6 +78,7 @@ const likeItem = (req, res) =>
             error.statusCode = NOT_FOUND_CODE;
             return Promise.reject(error);
         })
+        .then(item => res.status(OK_CODE).send({ data: item }))
         .catch((err) => {
             if (err.name === 'NotFound') {
                 res.status(NOT_FOUND_CODE).send({ message: "Not found error" }); 
@@ -101,6 +103,7 @@ const dislikeItem = (req, res) =>
             error.statusCode = NOT_FOUND_CODE;
             return Promise.reject(error);
         })
+        .then(item => res.status(OK_CODE).send({ data: item }))
         .catch((err) => {
             if (err.name === 'NotFound') {
                 res.status(NOT_FOUND_CODE).send({ message: "Not found error" }); 
