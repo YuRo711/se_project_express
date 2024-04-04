@@ -41,13 +41,13 @@ const deleteItem = (req, res) => {
             const error = new Error();
             error.name = 'NotFound';
             error.statusCode = NOT_FOUND_CODE;
-            return Promise.reject(error);
+            throw error;
         })
         .then((item) => {
-            if (req.user._id !== item.owner) {
+            if (req.user._id !== String(item.owner)) {
                 const error = new Error();
                 error.name = 'NotAuthorized';
-                return Promise.reject(error);
+                throw error;
             }
             return Item.findByIdAndDelete(itemId);
         })
@@ -76,7 +76,7 @@ const likeItem = (req, res) =>
             const error = new Error();
             error.name = "NotFound";
             error.statusCode = NOT_FOUND_CODE;
-            return Promise.reject(error);
+            throw error;
         })
         .then(item => res.status(OK_CODE).send({ data: item }))
         .catch((err) => {
@@ -101,7 +101,7 @@ const dislikeItem = (req, res) =>
             const error = new Error();
             error.name = "NotFound";
             error.statusCode = NOT_FOUND_CODE;
-            return Promise.reject(error);
+            throw error;
         })
         .then(item => res.status(OK_CODE).send({ data: item }))
         .catch((err) => {
