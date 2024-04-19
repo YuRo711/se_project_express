@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const Item = require('../models/clothingItem');
 const { 
     SERVER_ERROR_CODE,
@@ -68,7 +69,7 @@ const deleteItem = (req, res) => {
 const likeItem = (req, res) => 
     {
     Item.findByIdAndUpdate(
-        req.params.itemId,
+        mongoose.Types.ObjectId(req.params.itemId),
         { $addToSet: { likes: req.user._id } },
         { new: true },
     )
@@ -87,7 +88,7 @@ const likeItem = (req, res) =>
             } else {
                 res.status(SERVER_ERROR_CODE).send({ message: SERVER_ERROR_MESSAGE });
             }
-        });;
+        });
 };
 
 const dislikeItem = (req, res) => 

@@ -20,6 +20,7 @@ module.exports = (req, res, next) => {
     try {
         payload = jwt.verify(token, JWT_SECRET);
     } catch (err) {
+        console.log(err);
         return handleAuthError(res);
     }
 
