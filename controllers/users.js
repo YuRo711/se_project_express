@@ -18,8 +18,6 @@ const createUser = (req, res) => {
         .then(() => res.status(OK_CODE).send({ data: { name, avatar, email } }))
         .catch((err) => {
             if (err.name === 'ValidationError') {
-                res.status(BAD_REQUEST_CODE)
-                    .send({ message: err.message });
             } else if (err.code === 11000) {
                 res.status(CONFLICT_CODE).send({ message: err.message });
             } else {

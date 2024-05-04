@@ -1,20 +1,20 @@
 const mongoose = require('mongoose');
 const Item = require('../models/clothingItem');
 const { 
-    SERVER_ERROR_CODE,
-    NOT_FOUND_CODE,
     OK_CODE,
-    BAD_REQUEST_CODE,
-    SERVER_ERROR_MESSAGE,
-    FORBIDDEN_CODE
-} = require('../utils/errors')
+    VALIDATION_ERROR_MESSAGE,
+    NOT_FOUND_MESSAGE,
+    FORBIDDEN_MESSAGE
+} = require('../utils/errors');
+const BadRequestError = require('../utils/errors/bad-request-err');
+const NotFoundError = require('../utils/errors/not-found-err');
+const ForbiddenError = require('../utils/errors/forbidden-err');
 
 
 const getItems =  (req, res) => {
     Item.find({})
         .then(items => res.status(OK_CODE).send({ data: items }))
-        .catch(() => 
-            res.status(SERVER_ERROR_CODE).send({ message: SERVER_ERROR_CODE }));
+        .catch((err) => next(err));
 };
 
 const createItem = (req, res) => {
@@ -26,11 +26,9 @@ const createItem = (req, res) => {
         .then(item => res.status(OK_CODE).send({ data: item }))
         .catch((err) => {
             if (err.name === 'ValidationError') {
-                res.status(BAD_REQUEST_CODE)
-                    .send({ message: err.message })
+                next(new BadRequestError(VALIDATION_ERROR_MESSAGE));
             } else {
-                res.status(SERVER_ERROR_CODE)
-                    .send({ message: SERVER_ERROR_MESSAGE })
+                next(err);
             }
         });
 };
@@ -55,13 +53,13 @@ const deleteItem = (req, res) => {
         .then(item => res.status(OK_CODE).send({ data: item }))
         .catch((err) => {
             if (err.name === 'NotFound') {
-                res.status(NOT_FOUND_CODE).send({ message: "Not found error" }); 
+                next(new NotFoundError(NOT_FOUND_MESSAGE)); 
             } else if (err.name === 'CastError') {
-                res.status(BAD_REQUEST_CODE).send({ message: err.message });
+                next(new BadRequestError('The id string is in an invalid format'));
             } else if (err.name === 'NotAuthorized') {
-                res.status(FORBIDDEN_CODE).send({ message: 'Not authorized' })
+                next(new ForbiddenError(FORBIDDEN_MESSAGE));
             } else {
-                res.status(SERVER_ERROR_CODE).send({ message: SERVER_ERROR_MESSAGE });
+                next(err);
             }
         });
 }
@@ -82,11 +80,11 @@ const likeItem = (req, res) =>
         .then(item => res.status(OK_CODE).send({ data: item }))
         .catch((err) => {
             if (err.name === 'NotFound') {
-                res.status(NOT_FOUND_CODE).send({ message: "Not found error" }); 
+                next(new NotFoundError(NOT_FOUND_MESSAGE)); 
             } else if (err.name === 'CastError') {
-                res.status(BAD_REQUEST_CODE).send({ message: err.message });
+                next(new BadRequestError('The id string is in an invalid format'));
             } else {
-                res.status(SERVER_ERROR_CODE).send({ message: SERVER_ERROR_MESSAGE });
+                next(err);
             }
         });
 };
@@ -107,11 +105,11 @@ const dislikeItem = (req, res) =>
         .then(item => res.status(OK_CODE).send({ data: item }))
         .catch((err) => {
             if (err.name === 'NotFound') {
-                res.status(NOT_FOUND_CODE).send({ message: "Not found error" }); 
+                next(new NotFoundError(NOT_FOUND_MESSAGE)); 
             } else if (err.name === 'CastError') {
-                res.status(BAD_REQUEST_CODE).send({ message: err.message });
+                next(new BadRequestError('The id string is in an invalid format'));
             } else {
-                res.status(SERVER_ERROR_CODE).send({ SERVER_ERROR_MESSAGE });
+                next(err);
             }
         });;
 };
