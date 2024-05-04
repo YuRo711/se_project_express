@@ -2,7 +2,6 @@ const bcrypt = require('bcrypt');
 const User = require('../models/user');
 const {
     OK_CODE,
-    VALIDATION_ERROR_MESSAGE,
     NOT_FOUND_MESSAGE,
     ID_CAST_MESSAGE,
 } = require('../utils/errors')
@@ -19,7 +18,7 @@ const createUser = (req, res, next) => {
         .then(() => res.status(OK_CODE).send({ data: { name, avatar, email } }))
         .catch((err) => {
             if (err.name === 'ValidationError') {
-                next(new BadRequestError(VALIDATION_ERROR_MESSAGE));
+                next(new BadRequestError(err.message));
             } else if (err.code === 11000) {
                 next(new ConflictError('A user with this email already exists'));
             } else {
@@ -66,7 +65,7 @@ const editCurrentUser = (req, res, next) => {
             } else if (err.name === 'CastError') {
                 next(BadRequestError(ID_CAST_MESSAGE))
             } else if (err.name === 'ValidationError') {
-                next(new BadRequestError(VALIDATION_ERROR_MESSAGE));
+                next(new BadRequestError(err.message));
             } else {
                 next(err);
             }

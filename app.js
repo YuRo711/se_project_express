@@ -5,6 +5,7 @@ const cors = require('cors');
 const router = require('./routes/index');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const errorHandler = require("./middlewares/errorHandler");
+const { errors } = require('celebrate');
 
 
 const app = express();
@@ -19,7 +20,8 @@ mongoose.connect('mongodb://127.0.0.1:27017/wtwr_db');
 app.use(requestLogger);
 app.use('/', router);
 
+app.use(errors());
 app.use(errorHandler);
-// app.use(errorLogger);
+app.use(errorLogger);
 
 app.listen(PORT);

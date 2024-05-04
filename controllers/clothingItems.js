@@ -2,7 +2,6 @@ const mongoose = require('mongoose');
 const Item = require('../models/clothingItem');
 const { 
     OK_CODE,
-    VALIDATION_ERROR_MESSAGE,
     NOT_FOUND_MESSAGE,
     FORBIDDEN_MESSAGE,
     ID_CAST_MESSAGE
@@ -27,7 +26,7 @@ const createItem = (req, res) => {
         .then(item => res.status(OK_CODE).send({ data: item }))
         .catch((err) => {
             if (err.name === 'ValidationError') {
-                next(new BadRequestError(VALIDATION_ERROR_MESSAGE));
+                next(new BadRequestError(err.message));
             } else {
                 next(err);
             }
