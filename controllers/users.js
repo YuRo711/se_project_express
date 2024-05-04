@@ -1,16 +1,17 @@
 const bcrypt = require('bcrypt');
 const User = require('../models/user');
-const { 
-    SERVER_ERROR_CODE,
-    BAD_REQUEST_CODE,
+const {
     OK_CODE,
-    SERVER_ERROR_MESSAGE,
-    NOT_FOUND_CODE,
-    CONFLICT_CODE
+    VALIDATION_ERROR_MESSAGE,
+    NOT_FOUND_MESSAGE,
+    ID_CAST_MESSAGE,
 } = require('../utils/errors')
+const BadRequestError = require('../utils/errors/bad-request-err');
+const NotFoundError = require('../utils/errors/not-found-err');
+const ConflictError = require('../utils/errors/conflict-err');
 
 
-const createUser = (req, res) => {
+const createUser = (req, res, next) => {
     const { name, avatar, email, password } = req.body;
     console.log(password);
     bcrypt.hash(password, 5)
@@ -18,16 +19,16 @@ const createUser = (req, res) => {
         .then(() => res.status(OK_CODE).send({ data: { name, avatar, email } }))
         .catch((err) => {
             if (err.name === 'ValidationError') {
+                next(new BadRequestError(VALIDATION_ERROR_MESSAGE));
             } else if (err.code === 11000) {
-                res.status(CONFLICT_CODE).send({ message: err.message });
+                next(new ConflictError('A user with this email already exists'));
             } else {
-                res.status(SERVER_ERROR_CODE)
-                    .send({ message: SERVER_ERROR_MESSAGE });
+                next(err);
             }
         });
 };
 
-const getCurrentUser = (req, res) => {
+const getCurrentUser = (req, res, next) => {
     const { _id } = req.user;
 
     User.findById(_id)
@@ -39,16 +40,16 @@ const getCurrentUser = (req, res) => {
         .then(user => res.status(OK_CODE).send({ data: user }))
         .catch((err) => {
             if (err.name === 'NotFound') {
-                res.status(NOT_FOUND_CODE).send({ message: "Not found error" }); 
+                next(NotFoundError(NOT_FOUND_MESSAGE));
             } else if (err.name === 'CastError') {
-                res.status(BAD_REQUEST_CODE).send({ message: err.message });
+                next(BadRequestError(ID_CAST_MESSAGE))
             } else {
-                res.status(SERVER_ERROR_CODE).send({ message: SERVER_ERROR_MESSAGE });
+                next(err);
             }
         });
 }
 
-const editCurrentUser = (req, res) => {
+const editCurrentUser = (req, res, next) => {
     const { _id } = req.user;
     const changes = {};
     changes.name ??= req.body.name;
@@ -61,13 +62,13 @@ const editCurrentUser = (req, res) => {
         })
         .catch((err) => {
             if (err.name === 'NotFound') {
-                res.status(NOT_FOUND_CODE).send({ message: "Not found error" }); 
+                next(NotFoundError(NOT_FOUND_MESSAGE));
             } else if (err.name === 'CastError') {
-                res.status(BAD_REQUEST_CODE).send({ message: err.message });
+                next(BadRequestError(ID_CAST_MESSAGE))
             } else if (err.name === 'ValidationError') {
-                res.status(BAD_REQUEST_CODE).send({ message: err.message });
+                next(new BadRequestError(VALIDATION_ERROR_MESSAGE));
             } else {
-                res.status(SERVER_ERROR_CODE).send({ message: SERVER_ERROR_MESSAGE });
+                next(err);
             }
     });
 }

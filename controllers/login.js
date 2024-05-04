@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const User = require('../models/user');
 const { JWT_SECRET } = require('../utils/config');
-const { SERVER_ERROR_CODE, SERVER_ERROR_MESSAGE, UNAUTHORIZED_CODE } = require('../utils/errors');
+const UnauthorizedError = require('../utils/errors/unauthorized-err');
 
 const login = (req, res) => {
     const { email, password } = req.body;
@@ -31,9 +31,9 @@ const login = (req, res) => {
         })
         .catch((err) => {
             if (err.name === 'LoginError') {
-                res.status(UNAUTHORIZED_CODE).send({ message: 'Login error' });
+                next(new UnauthorizedError('Login error'));
             } else {
-                res.status(SERVER_ERROR_CODE).send({ message: SERVER_ERROR_MESSAGE });
+                next(err);
             }
         })
 }

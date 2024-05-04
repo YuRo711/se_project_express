@@ -4,14 +4,15 @@ const {
     OK_CODE,
     VALIDATION_ERROR_MESSAGE,
     NOT_FOUND_MESSAGE,
-    FORBIDDEN_MESSAGE
+    FORBIDDEN_MESSAGE,
+    ID_CAST_MESSAGE
 } = require('../utils/errors');
 const BadRequestError = require('../utils/errors/bad-request-err');
 const NotFoundError = require('../utils/errors/not-found-err');
 const ForbiddenError = require('../utils/errors/forbidden-err');
 
 
-const getItems =  (req, res) => {
+const getItems =  (req, res, next) => {
     Item.find({})
         .then(items => res.status(OK_CODE).send({ data: items }))
         .catch((err) => next(err));
@@ -33,7 +34,7 @@ const createItem = (req, res) => {
         });
 };
 
-const deleteItem = (req, res) => {
+const deleteItem = (req, res, next) => {
     const { itemId } = req.params;
     Item.findById(itemId)
         .orFail(() => {
@@ -55,7 +56,7 @@ const deleteItem = (req, res) => {
             if (err.name === 'NotFound') {
                 next(new NotFoundError(NOT_FOUND_MESSAGE)); 
             } else if (err.name === 'CastError') {
-                next(new BadRequestError('The id string is in an invalid format'));
+                next(new BadRequestError(ID_CAST_MESSAGE));
             } else if (err.name === 'NotAuthorized') {
                 next(new ForbiddenError(FORBIDDEN_MESSAGE));
             } else {
@@ -64,7 +65,7 @@ const deleteItem = (req, res) => {
         });
 }
 
-const likeItem = (req, res) => 
+const likeItem = (req, res, next) => 
     {
     Item.findByIdAndUpdate(
         mongoose.Types.ObjectId(req.params.itemId),
@@ -82,14 +83,14 @@ const likeItem = (req, res) =>
             if (err.name === 'NotFound') {
                 next(new NotFoundError(NOT_FOUND_MESSAGE)); 
             } else if (err.name === 'CastError') {
-                next(new BadRequestError('The id string is in an invalid format'));
+                next(new BadRequestError(ID_CAST_MESSAGE));
             } else {
                 next(err);
             }
         });
 };
 
-const dislikeItem = (req, res) => 
+const dislikeItem = (req, res, next) => 
     {
     Item.findByIdAndUpdate(
         req.params.itemId,
@@ -107,7 +108,7 @@ const dislikeItem = (req, res) =>
             if (err.name === 'NotFound') {
                 next(new NotFoundError(NOT_FOUND_MESSAGE)); 
             } else if (err.name === 'CastError') {
-                next(new BadRequestError('The id string is in an invalid format'));
+                next(new BadRequestError(ID_CAST_MESSAGE));
             } else {
                 next(err);
             }

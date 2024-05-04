@@ -10,3 +10,4 @@ module.exports.SERVER_ERROR_MESSAGE = 'An error has occurred on the server.';
 module.exports.VALIDATION_ERROR_MESSAGE = 'The entered data is invalid';
 module.exports.NOT_FOUND_MESSAGE = 'Not found error';
 module.exports.FORBIDDEN_MESSAGE = 'Not authorized';
+module.exports.ID_CAST_MESSAGE = 'The id string is in an invalid format';
