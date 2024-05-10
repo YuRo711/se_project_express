@@ -39,7 +39,6 @@ const deleteItem = (req, res, next) => {
         .orFail(() => {
             const error = new Error();
             error.name = 'NotFound';
-            error.statusCode = NOT_FOUND_CODE;
             throw error;
         })
         .then((item) => {
@@ -74,7 +73,6 @@ const likeItem = (req, res, next) =>
         .orFail(() => {
             const error = new Error();
             error.name = "NotFound";
-            error.statusCode = NOT_FOUND_CODE;
             throw error;
         })
         .then(item => res.status(OK_CODE).send({ data: item }))
@@ -99,7 +97,6 @@ const dislikeItem = (req, res, next) =>
         .orFail(() => {
             const error = new Error();
             error.name = "NotFound";
-            error.statusCode = NOT_FOUND_CODE;
             throw error;
         })
         .then(item => res.status(OK_CODE).send({ data: item }))

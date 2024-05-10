@@ -4,7 +4,7 @@ const User = require('../models/user');
 const { JWT_SECRET } = require('../utils/config');
 const UnauthorizedError = require('../utils/errors/unauthorized-err');
 
-const login = (req, res) => {
+const login = (req, res, next) => {
     const { email, password } = req.body;
 
     User.findOne({ email }).select('+password')

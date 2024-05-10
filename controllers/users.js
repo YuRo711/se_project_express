@@ -12,7 +12,6 @@ const ConflictError = require('../utils/errors/conflict-err');
 
 const createUser = (req, res, next) => {
     const { name, avatar, email, password } = req.body;
-    console.log(password);
     bcrypt.hash(password, 5)
         .then((hash) => User.create({ name, avatar, email, password: hash }))
         .then(() => res.status(OK_CODE).send({ data: { name, avatar, email } }))

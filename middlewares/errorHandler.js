@@ -1,7 +1,7 @@
 const { BAD_REQUEST_CODE, NOT_FOUND_CODE, UNAUTHORIZED_CODE, FORBIDDEN_CODE, SERVER_ERROR_CODE, CONFLICT_CODE, SERVER_ERROR_MESSAGE } = require("../utils/errors");
 
 module.exports = (err, req, res, next) => {
-    var code = err.statusCode;
+    const code = err.statusCode;
     if (code === BAD_REQUEST_CODE || code === UNAUTHORIZED_CODE ||
             code === NOT_FOUND_CODE || code === FORBIDDEN_CODE ||
             code === CONFLICT_CODE) {
