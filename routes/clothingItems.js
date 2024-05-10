@@ -7,15 +7,16 @@ const {
     dislikeItem,
 } = require('../controllers/clothingItems');
 const auth = require('../middlewares/auth');
+const { validateCardBody, validateItemId } = require('../middlewares/validator');
 
 router.get('/items', getItems);
 
-router.post('/items', auth, createItem);
+router.post('/items', auth, validateCardBody, createItem);
 
-router.delete('/items/:itemId', auth, deleteItem);
+router.delete('/items/:itemId', auth, validateItemId, deleteItem);
 
-router.put('/items/:itemId/likes', auth, likeItem);
+router.put('/items/:itemId/likes', auth, validateItemId, likeItem);
 
-router.delete('/items/:itemId/likes', auth, dislikeItem);
+router.delete('/items/:itemId/likes', auth, validateItemId, dislikeItem);
 
 module.exports = router;

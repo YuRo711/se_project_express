@@ -41,6 +41,19 @@ module.exports.validateCardBody = celebrate({
   }),
 });
 
+module.exports.validateItemId = celebrate({
+  params: Joi.object().keys({
+    itemId: Joi.string().required().custom(validateHex).min(24).max(24)
+      .custom(validateEmail).messages({
+      "string.empty": 'The "_id" field must be filled in',
+      "string.nothex": 'the "_id" field must be a hex string',
+      "string.min": 'The length of the "_id" field is 24',
+      "string.max": 'The length of the "_id" field is 24',
+    }),
+  }),
+});
+
+
 module.exports.validateUserData = celebrate({
   body: Joi.object().keys({
     name: Joi.string().required().min(2).max(30).messages({
@@ -78,7 +91,6 @@ module.exports.validateUserLogin = celebrate({
   }),
 });
 
-
 module.exports.validateUserEdit = celebrate({
   body: Joi.object().keys({
     name: Joi.string().required().min(2).max(30).messages({
@@ -90,18 +102,6 @@ module.exports.validateUserEdit = celebrate({
     avatar: Joi.string().required().custom(validateURL).messages({
       "string.empty": 'The "imageUrl" field must be filled in',
       "string.uri": 'the "imageUrl" field must be a valid url',
-    }),
-  }),
-});
-
-module.exports.validateId = celebrate({
-  body: Joi.object().keys({
-    _id: Joi.string().required().custom(validateHex).min(24).max(24)
-      .custom(validateEmail).messages({
-      "string.empty": 'The "_id" field must be filled in',
-      "string.nothex": 'the "_id" field must be a hex string',
-      "string.min": 'The length of the "_id" field is 24',
-      "string.max": 'The length of the "_id" field is 24',
     }),
   }),
 });
