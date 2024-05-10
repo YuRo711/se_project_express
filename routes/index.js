@@ -6,6 +6,7 @@ const {
 } = require('../utils/errors');
 const { login } = require('../controllers/login');
 const { createUser } = require('../controllers/users');
+const NotFoundError = require('../utils/errors/not-found-err');
 
 router.post('/signin', login);
 router.post('/signup', createUser);
@@ -14,9 +15,7 @@ router.use(userRouter);
 router.use(itemRouter);
 
 router.use('*', (req, res) => {
-    res.status(NOT_FOUND_CODE).send(
-        { message: "Requested resource not found" }
-    );
+    next(new NotFoundError("Requested resource not found"));
 });
 
 module.exports = router;

@@ -7,6 +7,9 @@ const { requestLogger, errorLogger } = require('./middlewares/logger');
 const errorHandler = require("./middlewares/errorHandler");
 const { errors } = require('celebrate');
 
+if (process.env.NODE_ENV === 'development') {
+    require('dotenv').config();
+}
 
 const app = express();
 const { PORT = 3001 } = process.env;
@@ -26,8 +29,8 @@ app.get('/crash-test', () => {
 app.use(requestLogger);
 app.use('/', router);
 
+app.use(errorLogger);
 app.use(errors());
 app.use(errorHandler);
-app.use(errorLogger);
 
 app.listen(PORT);

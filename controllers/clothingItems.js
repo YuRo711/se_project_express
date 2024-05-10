@@ -17,7 +17,7 @@ const getItems =  (req, res, next) => {
         .catch((err) => next(err));
 };
 
-const createItem = (req, res) => {
+const createItem = (req, res, next) => {
     const owner = req.user._id;
     const { name, weather, imageUrl } = req.body;
     Item.create(
